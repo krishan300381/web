@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotel Room Booking</title>
+</head>
+<body>
+    <form id="form1">
+        <label for="name">Name:</label>
+        <input type="text" id="name"><br>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date"><br>
+
+        <label for="fordays">For How Many Days:</label>
+        <input type="number" id="fordays"><br>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age"><br>
+
+        <div>
+            <p>Room Type</p>
+            <input type="radio" name="room_type" id="single" value="1">
+            <label for="single">Single Bed</label>
+            <input type="radio" name="room_type" id="double" value="2">
+            <label for="double">Double Bed</label>
+            <input type="radio" name="room_type" id="sharing" value="3">
+            <label for="sharing">Sharing</label>
+        </div><br>
+
+        <input type="button" id="submitbtn" value="Submit">
+        <input type="button" id="resetbtn" value="Reset">
+    </form>
+
+    <script>
+        class Entry {
+            constructor(name, date, fordays, roomtype, age) {
+                this.name = name;
+                this.date = date;
+                this.fordays = fordays;
+                this.roomtype = roomtype;
+                this.age = age;
+            }
+        }
+
+        const list = JSON.parse(localStorage.getItem("get")) || [];
+
+        const validate = (name, date, age, roomtype, fordays) => {
+            const entry = new Entry();
+            let errorMessage = "";
+
+            if (/^[A-Za-z\s]+$/.test(name) && name.trim() !== "") {
+                entry.name = name;
+            } else {
+                errorMessage += "Name: Must be alphabetic and non-empty.\n";
+            }
+
+            if (/^[0-9]+$/.test(age) && parseInt(age, 10) >= 1) {
+                entry.age = age;
+            } else {
+                errorMessage += "Age: Enter a valid age (mandatory).\n";
+            }
+
+            if (/^[0-9]+$/.test(fordays) && parseInt(fordays, 10) >= 1) {
+                entry.fordays = fordays;
+            } else {
+                errorMessage += "Stay Duration: Must be a positive number.\n";
+            }
+
+            // FIXED: Checking against the -1 fallback
+            if (roomtype !== "-1") {
+                entry.roomtype = roomtype;
+            } else {
+                errorMessage += "Room Type: Please select a room.\n";
+            }
+
+            if (date) {
+                entry.date = date;
+            } else {
+                errorMessage += "Date: Selection is mandatory.\n";
+            }
+
+            if (errorMessage.length > 0) {
+                alert(errorMessage);
+            } else {
+                list.push(entry);
+                localStorage.setItem('get', JSON.stringify(list));
+                alert("Booking saved successfully to database!");
+            }
+        }
+
+        const btn = document.getElementById("submitbtn");
+        const btnrs = document.getElementById("resetbtn");
+
+        btn.addEventListener('click', () => {
+            const name = document.getElementById("name").value;
+            const date = document.getElementById("date").value;
+            const fordays = document.getElementById("fordays").value;
+            const age = document.getElementById("age").value;
+            const roomtype = document.querySelector("input[name='room_type']:checked")?.value || "-1";
+
+            validate(name, date, age, roomtype, fordays);
+        });
+
+        btnrs.addEventListener('click', () => {
+            document.getElementById('form1').reset();
+        });
+    </script>
+</body>
+</html>
